@@ -10,6 +10,8 @@ In this repository you can find supplementary material to the video I produced (
 
 You can review the topics and interact with the code in the video with this .NET Interactive Notebook:
 
+- [equality.dib](https://github.com/ignacioerrico/softvision-qcw-equality-in-dotnet/blob/main/equality.dib)
+
 You can open the notebook with [different tools](https://github.com/dotnet/interactive). .NET developers will probably want to use [Visual Studio Code](https://code.visualstudio.com/). Make sure you have the official [.NET Interactive Notebooks](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.dotnet-interactive-vscode) extension installed.
 
 Got questions? [Create an issue](https://github.com/ignacioerrico/softvision-qcw-equality-in-dotnet/issues). I'd be happy to discuss it!
