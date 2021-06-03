@@ -65,15 +65,15 @@ Let's consider different data types to compare what each one returns in each cas
 short x = 1729;
 int y = 1729;
 
-Console.WriteLine("== operator: {0}", x == y);
+Console.WriteLine("x == y: {0}", x == y);
 
 // Since `short` overrides the virtual `Equals()` method, I'm casting `y` to `object`
 // to force the compiler (or interpreter in this case) to use the method from System.Object.
-Console.WriteLine("Virtual Equals() method from System.Object: {0}", x.Equals((object)y));
+Console.WriteLine("x.Equals((object)y): {0}", x.Equals((object)y));
 
 #!markdown
 
-It is clear from that example that the `==` operator and the virtual `Equals()` method from `System.Object` do different things under the hood, simply because they return different results. It's also worth pointing out that, for primitive types, both compare compares values.
+It is clear from that example that the `==` operator and the virtual `Equals()` method from `System.Object` do different things under the hood, simply because they return different results. It's also worth pointing out that, for primitive types, both compare values.
 
 #!markdown
 
@@ -84,9 +84,9 @@ It is clear from that example that the `==` operator and the virtual `Equals()` 
 var x = new Tuple<int, int>(3, 14159265);
 var y = new Tuple<int, int>(3, 14159265);
 
-Console.WriteLine("== operator: {0}", x == y);
+Console.WriteLine("x == y: {0}", x == y);
 
-Console.WriteLine("Virtual Equals() method from System.Object: {0}", x.Equals(y));
+Console.WriteLine("x.Equals(y): {0}", x.Equals(y));
 
 #!markdown
 
@@ -108,11 +108,11 @@ var x = "A nut for a jar of tuna";
 var y = new string("A nut for a jar of tuna");
 
 // I'm using `ReferenceEquals` from `System.Object` to prove to you that x and y are two different instances.
-Console.WriteLine("Are x and y the same instance? {0}", object.ReferenceEquals(x, y));
+Console.WriteLine("Are x and y the same instance object? {0}", object.ReferenceEquals(x, y));
 
-Console.WriteLine("== operator: {0}", x == y);
+Console.WriteLine("x == y: {0}", x == y);
 
-Console.WriteLine("Virtual Equals() method from System.Object: {0}", x.Equals(y));
+Console.WriteLine("x.Equals(y): {0}", x.Equals(y));
 
 #!markdown
 
@@ -140,9 +140,9 @@ var q1 = new Quaternion { A = 1, B = 6, C = 21, D = 107 };
 var q2 = new Quaternion { A = 1, B = 6, C = 21, D = 107 };
 
 // Uncomment this line, and verify that using `==` returns an error:
-//Console.WriteLine("== operator: {0}", q1 == q2);
+//Console.WriteLine("q1 == q2: {0}", q1 == q2);
 
-Console.WriteLine("Virtual Equals() method from System.Object: {0}", q1.Equals(q2));
+Console.WriteLine("q1.Equals(q2): {0}", q1.Equals(q2));
 
 #!markdown
 
