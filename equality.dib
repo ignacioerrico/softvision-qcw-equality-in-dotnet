@@ -1,0 +1,242 @@
+#!markdown
+
+# A brief introduction to equality in .NET
+
+Some of you may wonder why talk about equality. After all, we all know that one and two makes three, right? Let’s check, just to be sure.
+
+#!csharp
+
+Console.WriteLine("Q: Dear C#, 0.1 + 02 == 0.3?\nA: {0}", 0.1 + 0.2 == 0.3);
+
+#!markdown
+
+As the previous example suggests, equality is often hard to get right.
+
+In this .NET Interactive notebook I will briefly introduce you to the topic of equality in .NET with C#.
+
+#!markdown
+
+## Prerequisites
+
+In order to follow along, you just need to have basic C# knowledge. In particular, you need to understand:
+- Inheritance
+- Virtual methods
+
+#!markdown
+
+## Which tools does .NET provide to deal with equality?
+
+As you may know, all data types in .NET ultimately derive from [System.Object](https://docs.microsoft.com/en-us/dotnet/api/system.object?view=net-5.0). As a .NET developer, you should be familiar with this class.
+
+`System.Object` exposes [eight methods](https://docs.microsoft.com/en-us/dotnet/api/system.object?view=net-5.0#methods).
+- Three of them include the word _Equals_ in their name and are in fact used for equality:
+  - The virtual [Equals(Object)](https://docs.microsoft.com/en-us/dotnet/api/system.object.equals?view=net-5.0#System_Object_Equals_System_Object_) method
+  - The static [Equals(Object, Object)](https://docs.microsoft.com/en-us/dotnet/api/system.object.equals?view=net-5.0#System_Object_Equals_System_Object_System_Object_) method
+  - The static [ReferenceEquals(Object, Object)](https://docs.microsoft.com/en-us/dotnet/api/system.object.referenceequals?view=net-5.0#System_Object_ReferenceEquals_System_Object_System_Object_) method
+- A fourth method plays an important role in equality as well:
+  - The virtual [GetHashCode()](https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=net-5.0#System_Object_GetHashCode) method
+
+So half of its interface is about equality!
+
+Additionally, the framework has the [IEquatable<T> interface](https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1?view=net-5.0) in the `System` namespace.
+
+Then, there’s the [== operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/equality-operators#equality-operator-) in C#.
+
+And that’s not even half of the tools at your disposal to deal with equality. There's the [IEqualityComparer<T> interface](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iequalitycomparer-1?view=net-5.0), the [EqualityComparer<T> class](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.equalitycomparer-1?view=net-5.0), and the [IStructuralEquatable interface](https://docs.microsoft.com/en-us/dotnet/api/system.collections.istructuralequatable?view=net-5.0), among quite a few others.
+
+#!markdown
+
+## The `==` operator and the virtual `Equals()` method from System.Object
+
+The first thing you should know is that `==` is an operator specific to C#.
+
+.NET only understands methods, not operators. As mentioned above, one of the methods that `System.Object` exposes is the virtual `Equals(object)` method, which, as its signature implies, takes an `object` as a parameter. That’s the most fundamental tool provided by .NET to deal with equality.
+
+So an obvious question is whether the `==` operator and the virtual `Equals()` method from `System.Object` behave the same under the hood.
+
+Let's consider different data types to compare what each one returns in each case.
+
+#!markdown
+
+### Primitive types
+
+#!csharp
+
+short x = 1729;
+int y = 1729;
+
+Console.WriteLine("== operator: {0}", x == y);
+
+// Since `short` overrides the virtual `Equals()` method, I'm casting `y` to `object`
+// to force the compiler (or interpreter in this case) to use the method from System.Object.
+Console.WriteLine("Virtual Equals() method from System.Object: {0}", x.Equals((object)y));
+
+#!markdown
+
+It is clear from that example that the `==` operator and the virtual `Equals()` method from `System.Object` do different things under the hood, simply because they return different results. It's also worth pointing out that, for primitive types, both compare compares values.
+
+#!markdown
+
+### Reference types
+
+#!csharp
+
+var x = new Tuple<int, int>(3, 14159265);
+var y = new Tuple<int, int>(3, 14159265);
+
+Console.WriteLine("== operator: {0}", x == y);
+
+Console.WriteLine("Virtual Equals() method from System.Object: {0}", x.Equals(y));
+
+#!markdown
+
+I, for one, didn't see that coming!
+
+Again, it is clear that `==` and the virtual `Equals()` method do different things, simply because they return different results.
+
+**IMPORTANT**. Let me make it clear that that should **not** happen. In my opinion, this is an inconsistency in .NET. I just wanted to make the point by way of example that `==` and the virtual `Equals()` method do different things under the hood, but **they should still return the same result**.
+
+As before, it’s worth pointing out that even though the tuples contain the exact same values, `==` does not compare their values. It compares whether or not they are the same instance of the `Tuple` class.
+
+#!markdown
+
+### Strings
+
+#!csharp
+
+var x = "A nut for a jar of tuna";
+var y = new string("A nut for a jar of tuna");
+
+// I'm using `ReferenceEquals` from `System.Object` to prove to you that x and y are two different instances.
+Console.WriteLine("Are x and y the same instance? {0}", object.ReferenceEquals(x, y));
+
+Console.WriteLine("== operator: {0}", x == y);
+
+Console.WriteLine("Virtual Equals() method from System.Object: {0}", x.Equals(y));
+
+#!markdown
+
+In this case, the `==` operator and the virtual `Equals()` method return the same result. As mentioned before, that should always be the case for variables of the same type.
+
+However, that’s an interesting result. `string` is a **reference type**, and I said before that, for a reference type, the `==` operator compares references, not values, and the references here are clearly different. Why did I get `true` in both cases then? Well, that’s because the `String` class redefined the meaning of the `==` operator to compare values, not references. And it makes sense. For `string`s, you wouldn’t normally want to compare references.
+
+#!markdown
+
+### Custom value types
+
+Just to be clear, a custom value type is defined with the `struct` keyword.
+
+#!csharp
+
+struct Quaternion
+{
+    public int A { get; set; }
+    public int B { get; set; }
+    public int C { get; set; }
+    public int D { get; set; }
+}
+
+var q1 = new Quaternion { A = 1, B = 6, C = 21, D = 107 };
+var q2 = new Quaternion { A = 1, B = 6, C = 21, D = 107 };
+
+// Uncomment this line, and verify that using `==` returns an error:
+//Console.WriteLine("== operator: {0}", q1 == q2);
+
+Console.WriteLine("Virtual Equals() method from System.Object: {0}", q1.Equals(q2));
+
+#!markdown
+
+The first thing to note here is that **you can’t use the `==` operator with a custom value type**. It’s good practice to always define what `==` should do with your custom value types, and I’ll show you how to do that in a moment.
+
+The virtual `Equals()` method must always return a value, and it’s clear in this case that it’s comparing the values of each property. But, hey, how does it know which properties my `struct` has, if the method receives an `object`? Well, the `ValueType` class overrides the virtual `Equals()` method in `System.Object`, and this overridden method uses reflection to find the properties of your custom value type. As you probably know, reflection is slow, so you should also override the virtual `Equals()` method in your custom value types. Let’s do that next.
+
+#!markdown
+
+## Implementing equality for a custom value type following best practices
+
+Everytime you define a custom value type, especially if you don’t know who is going to consume it, you must define what the `==` operator does. C# requires that you overload the `!=` operator if you overload the `==` operator.
+
+Also, to avoid the performance penalty incurred by reflection, you should override the virtual `Equals()` method. However, `Equals()` takes an `object` as a parameter, so you still have a penalty for boxing. So we want a type-safe `Equals()`. That’s where the `IEquatable<T>` interface comes into play. It defines a single method called `Equals()` that is type-safe.
+
+And lastly, overriding the virtual `Equals()` method implies overriding the `GetHashCode()` method: if two variables are equal they must return the same hashcode (otherwise, data structures like `Dictionary<K,V>` won’t work).
+
+Yes, you must implement the five methods I just mentioned. It’s a **best practice** that you should follow everytime you define a custom value type.
+
+Further reading: [How to define value equality for a struct](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/how-to-define-value-equality-for-a-type#struct-example).
+
+Here's how to implement equality for a custom value type following best practices:
+
+#!csharp
+
+// Make the `struct` implement the `IEquatable<T>` interface.
+struct Quaternion : IEquatable<Quaternion>
+{
+    public int A { get; set; }
+    public int B { get; set; }
+    public int C { get; set; }
+    public int D { get; set; }
+
+    // Overload the `==` operator.
+    public static bool operator ==(Quaternion left, Quaternion right) => left.Equals(right);
+
+    // C# requires that if you overload the `==` operator, you must overload the `!=` operator too.
+    public static bool operator !=(Quaternion left, Quaternion right) => !left.Equals(right);
+
+    // Implement the `IEquatable<T>` interface, which implies defining a type-safe `Equals()` method.
+    // This is where I'll write my equality logic: I’ll return `true` only if all the properties have the same value.
+    public bool Equals(Quaternion quaternion) =>
+        A == quaternion.A &&
+        B == quaternion.B &&
+        C == quaternion.C &&
+        D == quaternion.D;
+
+    // To avoid the performance penalty incurred by reflection, override the virtual `Equals()` method.
+    // Since this method is not type safe, check if we're getting the correct type.
+    //   If it is the correct type, simply call the type-safe method.
+    //   Otherwise, there’s no way the two can be equal.
+    public override bool Equals(object o) => o is Quaternion quaternion && Equals(quaternion);
+
+    // Overriding the virtual `Equals()` method implies overriding the `GetHashCode()` method
+    public override int GetHashCode() => (A, B, C, D).GetHashCode();
+}
+
+#!markdown
+
+## Should I use the `==` operator or the virtual `Equals()` method?
+
+We saw that the `==` operator and the virtual `Equals()` method do different things under the hood, but **they should return the same result**.
+
+So which one should you use? Normally you'll write idiomatic C# code using the `==` operator, but there are cases where you'll need to use the virtual `Equals()` method. One such case is when using **generics**, because the compiler doesn’t know which type will be used at runtime, so it will not use overloads of the `==` operator. A trivial example would be this:
+
+#!csharp
+
+// This won't compile (or be interpreted, for that matter)
+// bool AreEqual<T>(T t1, T t2)
+// {
+//     return t1 == t2;
+// }
+
+#!markdown
+
+That wouldn’t even compile, because `T` could be a custom value type, and as we saw before, you can’t use the `==` operator with your custom value types (unless, of course, you overload it). Even if you restrict `T` to be a reference type (specifying `where T : class`), using the `==` operator would introduce bugs that could be really hard to find.
+
+However, the virtual `Equals()` method won’t cause any issues, because, well, it’s _virtual_, and the correct override will be selected at runtime. So in this case, this is the correct thing to write:
+
+#!csharp
+
+bool AreEqual<T>(T t1, T t2)
+{
+    return t1.Equals(t2);
+}
+
+#!markdown
+
+## Wrap-up
+
+.NET provides many tools to deal with equality, and I only scratched the surface with the `==` operator and the virtual `Equals()` method from `System.Object`, but there’s much more than meets the eye.
+
+We saw that the C# equality operator (`==`) and the virtual `Equals()` method from the `System.Object` class behave differently under the hood, but they should return the same result. We tried them out with different data types (primitive, reference, string, and custom value types).
+
+We saw that you can't use the `==` operator for custom value types. You can use `Equals()`, and it works out of the box, but it uses reflection, which is slow. So it's good practice to define equality for your custom value types, especially if you don't know who is going to consume them. That implies adding **five** methods to your `struct`.
+
+Lastly, you now have a smattering of when to use the `==` operator and when to use the virtual `Equals()` method. You'll normally want to use the `==` operator, but there are exceptions.
