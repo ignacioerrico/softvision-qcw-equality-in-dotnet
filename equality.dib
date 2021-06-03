@@ -6,13 +6,15 @@ Some of you may wonder why talk about equality. After all, we all know that one 
 
 #!csharp
 
-Console.WriteLine("Q: Dear C#, 0.1 + 02 == 0.3?\nA: {0}", 0.1 + 0.2 == 0.3);
+Console.WriteLine("Q: Dear C#, 0.1 + 0.2 == 0.3?\nA: {0}", 0.1 + 0.2 == 0.3);
 
 #!markdown
 
 As the previous example suggests, equality is often hard to get right.
 
 In this .NET Interactive notebook I will briefly introduce you to the topic of equality in .NET with C#.
+
+I encourage you to try things out and play with the code! If you have questions or just want to discuss something, [create an issue](https://github.com/ignacioerrico/softvision-qcw-equality-in-dotnet/issues).
 
 #!markdown
 
