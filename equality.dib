@@ -14,7 +14,7 @@ As the previous example suggests, equality is often hard to get right.
 
 In this .NET Interactive notebook I will briefly introduce you to the topic of equality in .NET with C#.
 
-I encourage you to try things out and play with the code! If you have questions or just want to discuss something, [create an issue](https://github.com/ignacioerrico/softvision-qcw-equality-in-dotnet/issues).
+I encourage you to try things out and play with the code! If you have questions or just want to discuss something, go ahead and [create an issue](https://github.com/ignacioerrico/softvision-qcw-equality-in-dotnet/issues). I'd be happy to discuss it!
 
 #!markdown
 
@@ -40,7 +40,7 @@ As you may know, all data types in .NET ultimately derive from [System.Object](h
 
 So half of its interface is about equality!
 
-Additionally, the framework has the [IEquatable<T> interface](https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1?view=net-5.0) in the `System` namespace.
+Additionally, the framework has the [IEquatable\<T\> interface](https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1?view=net-5.0) in the `System` namespace.
 
 Then, there’s the [== operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/equality-operators#equality-operator-) in C#.
 
@@ -145,7 +145,7 @@ struct Quaternion
 var q1 = new Quaternion { A = 1, B = 6, C = 21, D = 107 };
 var q2 = new Quaternion { A = 1, B = 6, C = 21, D = 107 };
 
-// Uncomment this line, and verify that using `==` returns an error:
+// Uncomment this line, and verify that using `==` gives a compiler error:
 //Console.WriteLine("q1 == q2: {0}", q1 == q2);
 
 Console.WriteLine("q1.Equals(q2): {0}", q1.Equals(q2));
