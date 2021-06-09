@@ -2,6 +2,8 @@
 
 > I created this in the context of the *Quick Code Wednesday* (QCW) series at Cognizant Softvision.
 
+[Watch the video on YouTube](https://www.youtube.com/watch?v=AeF9KOlmTQ4)
+
 Equality is complex. Things that you may expect to be equal often are not. Not implementing equality explicitly can result in code that doesn't perform well.
 
 In this repository you can find supplementary material to the video I produced (kindly edited by the Media Communications team at Cognizant Softvision).
